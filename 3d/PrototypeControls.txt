@@ -1,0 +1,8 @@
+Click the canvas to gain access.
+
+Player controls are WASD. W moves forward, S moves backward. A and D rotate you.
+
+World controls are "1" and "2". 1 increases the number of rays used and 2 decreases the number of rays used. It's fucking awesome to play with, especially as the number of rays goes down to a very low number.
+(I set bounds of # of rays from 1 - 600).
+
+You can scale the window as you please.
