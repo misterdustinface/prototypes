@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="56">
+ <tileset firstgid="1" name="level" tilewidth="32" tileheight="32" spacing="2" tilecount="21">
+  <image source="../_tiles/level.png" trans="ffffff" width="128" height="256"/>
+ </tileset>
+ <layer name="staticTiles" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt1VELgjAUgNGltajIl/7/f01hQYxhFLWpnYfzsisM7wcaQwgRYEUOG9R6p3rosWStd6qHHu+4Fuz1aNbjMtoV6KHH0tXqEbMWv7y79U7X1KPG3a13+q0efTo7F96xS7PTi13cRkOlzlvu0Wfnz026bDbXZJof9fhY6T/7MCRzz+TfIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgH93B8d36BY=
+  </data>
+ </layer>
+ <objectgroup name="staticCollisions">
+  <object id="1" x="65" y="447" width="546" height="68"/>
+  <object id="2" x="146" y="418" width="125" height="29">
+   <properties>
+    <property name="notWall" value=""/>
+   </properties>
+  </object>
+  <object id="3" x="177" y="383" width="63" height="36">
+   <properties>
+    <property name="notWall" value=""/>
+   </properties>
+  </object>
+  <object id="4" x="349.667" y="446.778">
+   <polygon points="0,0 63.3333,-61.2222 102.389,-62.2778 164.667,4.22222"/>
+  </object>
+  <object id="9" x="349.667" y="446.778">
+   <polygon points="0,0 63.3333,-61.2222 102.389,-62.2778 164.667,4.22222"/>
+  </object>
+  <object id="11" x="610.667" y="448" width="1144" height="69.3333"/>
+  <object id="14" x="1125" y="452">
+   <polygon points="0,0 84,-140 156,-3"/>
+  </object>
+  <object id="15" x="1381" y="456">
+   <polygon points="0,0 39,-228 90,0"/>
+  </object>
+  <object id="16" x="1557" y="455">
+   <polygon points="0,0 15,-397 44,0"/>
+  </object>
+  <object id="23" x="860.667" y="211.333" width="193.333" height="178.667"/>
+  <object id="53" x="705" y="389" width="60" height="60"/>
+ </objectgroup>
+ <objectgroup name="levelLocations">
+  <object id="5" name="playerSpawn" x="79" y="370" width="31" height="77.3333"/>
+ </objectgroup>
+ <objectgroup name="lighting" visible="0">
+  <object id="17" type="point" x="18" y="81" width="358" height="358">
+   <ellipse/>
+  </object>
+  <object id="21" type="point" x="421" y="222" width="239" height="239">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>
