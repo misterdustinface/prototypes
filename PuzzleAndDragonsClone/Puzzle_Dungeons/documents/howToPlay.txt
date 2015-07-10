@@ -1,0 +1,22 @@
+Controls: 
+	- Keyboard Arrows to move cursor, Hold spacebar to "grab" orb, release spacebar to "release" orb.
+	- Mouse to move cursor, Hold mouse button to "grab" orb, release mouse button to "release" orb.
+
+Puzzle Rules: 
+	- Match orbs in lines of THREE or more (of the same color), horizontally or vertically, to get combos.
+	- The cursor can DRAG an orb around, swapping with adjacent orbs MULTIPLE times in one turn. 
+	- There are currently a limited number of swaps per turn.
+	- When a turn is over, orbs will match up, clear, and then new orbs will fall.
+
+Puzzle Objective:
+	- Get combos of a certain color to increase damage against your enemy
+	- Get as many combos as possible to increase the damage multiplier against your enemy
+
+Exercise Events:
+	- Exercise can generate game GOLD
+	- Traveling can CAPTURE new monsters
+
+Game Objective:	
+	- CAPTURE monsters to build up your team and defeat more dungeons
+	- Sacrifice monsters to your favorite monsters to increase their power
+	- Get more GOLD for upgrades
