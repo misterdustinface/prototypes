@@ -1,0 +1,79 @@
+package com.retroactivegames.game;
+
+import java.util.Random;
+
+import com.badlogic.gdx.graphics.Color;
+
+import devan.drawing.GeometryDrawer;
+import devan.drawing.GraphicsData;
+
+public class TetrisWorldRenderer {
+
+	public Color[] colors = new Color[]{Color.DARK_GRAY, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.PINK, Color.MAGENTA};
+	
+	public int blockOffset = 2;
+	
+	private TetrisWorld world;
+	
+	public TetrisWorldRenderer(TetrisWorld WORLD){
+		world = WORLD;
+	}
+	
+	public void render(GraphicsData g){
+		if(world.hasLost() || GameState.paused){
+			renderInterrupt(g);
+			if(GameState.paused){ renderPausedMessage(g); }
+			if(world.hasLost()){ renderLostMessage(g); }
+		}else{
+			renderBoard(g);
+		}
+	}
+	
+	public void shuffleColors(){
+		Random rand = new Random();
+		Color temp;
+		int tempIndex;
+		for(int i = 0; i < colors.length; ++i){
+			tempIndex = rand.nextInt(colors.length);
+			temp = colors[tempIndex];
+			colors[tempIndex] = colors[i];
+			colors[i] = temp;
+		}
+	}
+	
+	private void renderBoard(GraphicsData g){
+		BlockGridRenderer.renderGrid(g, world);
+	}
+	
+	private void renderInterrupt(GraphicsData g){
+		int blockWidth  = g.display.width/world.getCols()  - blockOffset;
+		int blockHeight = g.display.height/world.getRows() - blockOffset;
+		
+		for(int row = 0; row < world.getRows(); ++row){
+			for(int col = 0; col < world.getCols(); ++col){
+				GeometryDrawer.drawFilledRectangle(g, 	(int)(col*blockWidth + (col+0.5f)*blockOffset), 
+														(int)(row*blockHeight + (row+0.5f)*blockOffset), 
+														blockWidth, blockHeight, Color.LIGHT_GRAY);
+			}
+		}
+	}
+	
+	private void renderMessageBackgroundBox(GraphicsData g){
+		int blockWidth  = g.display.width/world.getCols()  - blockOffset;
+		int blockHeight = g.display.height/world.getRows() - blockOffset;
+		GeometryDrawer.drawFilledRectangle(g, 	(2*blockWidth + 2*blockOffset), 
+												(9*blockHeight + 9*blockOffset), 
+												(6*blockWidth + 6*blockOffset), 
+												(2*blockHeight + 2*blockOffset), Color.LIGHT_GRAY);
+	}
+	
+	private void renderLostMessage(GraphicsData g){
+		renderMessageBackgroundBox(g);
+		g.drawText("GAME LOST", g.display.width/2 - 44, g.display.height/2 -2, Color.WHITE);
+	}
+	
+	private void renderPausedMessage(GraphicsData g){
+		renderMessageBackgroundBox(g);
+		g.drawText("PAUSED", g.display.width/2 - 30, g.display.height/2 -2, Color.WHITE);
+	}
+}

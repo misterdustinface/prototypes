@@ -1,0 +1,115 @@
+package com.retroactivegames.game;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+abstract public class TetrinoFactory { 
+	
+	private Tetrino reserveTetrino;
+	private static 	ArrayList<Tetrino> tetrinoQueue = new ArrayList<Tetrino>();
+	
+	private static Random rand = new Random();
+	private static BlockGrid[][] PRESETS = new BlockGrid[][]{
+		
+		//3
+		new BlockGrid[]{new BlockGrid(new int[][]{	{3,3},
+													{3,3}  	})
+		},
+		
+		//4
+		new BlockGrid[]{new BlockGrid(new int[][]{	{4,4,4},
+													{4} 	}),
+						new BlockGrid(new int[][]{	{4,4},
+													{0,4},
+													{0,4}  	}),
+						new BlockGrid(new int[][]{	{0,0,4},
+													{4,4,4} }),
+						new BlockGrid(new int[][]{	{4},
+													{4},
+													{4,4}  	})
+		},
+		
+		//8
+		new BlockGrid[]{new BlockGrid(new int[][]{	{8,0,0},
+													{8,8,8} }),
+						new BlockGrid(new int[][]{	{8,8},
+													{8},
+													{8}  	}),
+						new BlockGrid(new int[][]{	{8,8,8},
+													{0,0,8} }),
+						new BlockGrid(new int[][]{	{0,8},
+													{0,8},
+													{8,8}  	})
+		},
+		
+		//5
+		new BlockGrid[]{new BlockGrid(new int[][]{	{5},
+													{5},
+													{5},
+													{5} 	  }),
+						new BlockGrid(new int[][]{	{5,5,5,5} })
+		},
+		
+		//2
+		new BlockGrid[]{new BlockGrid(new int[][]{	{0,2},
+													{2,2,2},
+													{0,0,0}	}),
+						new BlockGrid(new int[][]{	{2},
+													{2,2},
+													{2}		}),
+						new BlockGrid(new int[][]{	{2,2,2},
+													{0,2},
+													{0}		}),
+						new BlockGrid(new int[][]{	{0,2},
+													{2,2},
+													{0,2}	})
+		},
+		
+		//6
+		new BlockGrid[]{new BlockGrid(new int[][]{	{0,6},
+													{6,6},
+													{6}	}),
+						new BlockGrid(new int[][]{	{6,6},
+													{0,6,6} }),
+		},	
+		
+		//1
+		new BlockGrid[]{new BlockGrid(new int[][]{	{1},
+													{1,1},
+													{0,1}	}),
+						new BlockGrid(new int[][]{	{0,1,1},
+													{1,1} }),
+		},
+//		new BlockGrid[]{new BlockGrid(new int[][]{	{6,6,6,6},
+//													{6,6,6,6},
+//													{6,6,6,6},
+//													{6,6,6,6}})
+//		}
+	};
+	private static BlockGrid[] getRandomPreset(){
+		return PRESETS[rand.nextInt(PRESETS.length)];
+	}
+	
+	public static void produceTetrino(int worldWidth, int worldHeight){
+		tetrinoQueue.add(new Tetrino(getRandomPreset(), new BoardCoordinate(worldHeight, (worldWidth>>1) - 1)));
+	}
+	
+	public static Tetrino swap(Tetrino tetrino, int worldWidth, int worldHeight){
+		tetrino.setRow(worldHeight);
+		tetrino.setCol((worldWidth>>1) - 1);
+		Tetrino t = tetrinoQueue.set(0, tetrino);
+		t.setRow(worldHeight);
+		t.setCol((worldWidth>>1) - 1);
+		return t;
+	}
+	public static void push(Tetrino tetrino){
+		tetrinoQueue.add(0, tetrino);
+	}
+	public static Tetrino pop(){ 
+		return tetrinoQueue.remove(0);
+	}
+	public static Tetrino peek(){
+		return tetrinoQueue.get(0);
+	}
+	
+}

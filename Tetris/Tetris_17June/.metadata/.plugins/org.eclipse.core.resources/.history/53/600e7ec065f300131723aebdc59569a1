@@ -1,0 +1,9 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.graphics.Color;
+
+public class BlockGridRenderer {
+
+	public static Color[] colors = new Color[]{Color.DARK_GRAY, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.PINK, Color.MAGENTA};
+	public static int blockOffset = 2;
+}

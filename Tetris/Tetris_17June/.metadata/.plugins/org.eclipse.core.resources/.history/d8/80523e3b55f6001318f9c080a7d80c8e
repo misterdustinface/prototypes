@@ -1,0 +1,20 @@
+package devan.utilities;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+
+public final class Shuffler {
+	private Shuffler(){}
+	
+	private static Random rand = new Random();
+	
+	public static Collection shuffleArrayList(ArrayList<?> list, Class c) throws InstantiationException, IllegalAccessException{
+		Object temp = c.newInstance();
+		int tempIndex;
+		
+		list.get(index)
+		
+		return list;
+	}
+}

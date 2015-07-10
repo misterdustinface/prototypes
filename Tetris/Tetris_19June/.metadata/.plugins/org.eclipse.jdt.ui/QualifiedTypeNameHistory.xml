@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="devan.drawing.GraphicsData"/>
+<fullyQualifiedTypeName name="devan.geometry.Math"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.Gdx"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds"/>
+<fullyQualifiedTypeName name="com.retroactivegames.game.TetrinoFactory"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.graphics.Color"/>
+<fullyQualifiedTypeName name="devan.rendering.Display"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.util.Collection"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="devan.utilities.Shuffler"/>
+<fullyQualifiedTypeName name="sun.net.www.content.text.Generic"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.utils.Disposable"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.audio.Music.OnCompletionListener"/>
+<fullyQualifiedTypeName name="com.badlogic.gdx.audio.Music"/>
+<fullyQualifiedTypeName name="devan.sound.MusicManipulator"/>
+<fullyQualifiedTypeName name="devan.sound.FadeOut"/>
+<fullyQualifiedTypeName name="devan.drawing.GeometryDrawer"/>
+</qualifiedTypeNameHistroy>

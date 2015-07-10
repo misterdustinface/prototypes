@@ -1,0 +1,9 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.audio.Music;
+
+public class MusicPlaylist {
+
+	private Music currentMusic;
+	
+}

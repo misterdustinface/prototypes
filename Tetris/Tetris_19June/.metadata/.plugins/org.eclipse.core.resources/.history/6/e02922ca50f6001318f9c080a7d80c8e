@@ -1,0 +1,285 @@
+package com.retroactivegames.game;
+
+public class TetrisWorld extends BlockGrid{
+
+	private Tetrominoe reserveTetrominoe;
+	private Tetrominoe fallingTetrominoe;
+	private int rowsCleared;
+	
+	final private long INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN 			= 1000;
+	final private long LEVEL_UP_WAIT_TIME_DECREMENTER 								= 100;
+	final private int  NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED = 10;
+	
+	private int nextLevelUpGoal = NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED;
+	
+	private long timeToWaitUntilNextGravityShiftDown;
+	private long lastTimeToWait;
+	
+	private int  difficultyLevel;
+	
+	private boolean hasLost;
+	
+	public TetrisWorld(int WIDTH, int HEIGHT) {
+		super(WIDTH, HEIGHT);
+		reset();
+		TetrominoeFactory.produceTetrominoe(getWidth(), getHeight());
+	}
+	
+	public void reset(){
+		clear();
+
+		reserveTetrominoe = null;
+		TetrominoeFactory.clear();
+		
+		TetrominoeFactory.produceTetrominoe(getWidth(), getHeight());
+		fallingTetrominoe 	= TetrominoeFactory.pop();
+		rowsCleared 	= 0;
+		lastTimeToWait 	= System.currentTimeMillis();
+		
+		timeToWaitUntilNextGravityShiftDown = INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN;
+		difficultyLevel = 1;
+		hasLost = false;
+	}
+	
+	public int getNumberOfClearedRows(){ return rowsCleared; }
+	public int getDifficulty(){ return difficultyLevel; }
+	
+	private void checkMatches(){
+		// DEPENDENCY ON ROW CHECK ORDER GOING OPPOSITE OF ALL INTERAL LOOP CHECKS.
+		for(int i = getRows()-1; i >=0; --i){
+			if(isRowFull(i)){
+				clearRow(i);
+				moveFloatingRowsDown();
+			}
+		}
+	}
+	
+	private void moveFloatingRowsDown(){
+		for(int q = 0; q < getRows()-1; ++q){
+			if(isRowEmpty(q)){ 
+				swapRows(q, findFirstNonEmptyRow(q));
+			}
+		}
+	}
+	
+	private int findFirstNonEmptyRow(int fromRow){
+		for(int row = fromRow; row < getRows(); ++row){
+			if(!isRowEmpty(row)){ return row; }
+		}
+		return fromRow;
+	}
+	
+	private void updateTimer(){
+		if(System.currentTimeMillis() > lastTimeToWait + timeToWaitUntilNextGravityShiftDown){
+			shiftTetrinoDown();
+			lastTimeToWait = System.currentTimeMillis();
+		}
+	}
+	
+	private void updateLevelUpData(){
+		if(rowsCleared >= nextLevelUpGoal){
+			++difficultyLevel;
+			nextLevelUpGoal = rowsCleared + NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED;
+			timeToWaitUntilNextGravityShiftDown = INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN - (difficultyLevel-1)*LEVEL_UP_WAIT_TIME_DECREMENTER;
+		}
+	}
+	
+	public void update(){
+		if(!hasLost){ updateTimer(); }
+	}
+	
+	public boolean hasLost(){ return hasLost; }
+	
+	public void newFallingTetrino(){
+		TetrominoeFactory.produceTetrominoe(getWidth(), getHeight());
+		setCurrentFallingTetrino(TetrominoeFactory.pop());
+	}
+	
+	private void setCurrentFallingTetrino(Tetrominoe current){		
+		if(fallingTetrominoe.getRow() + fallingTetrominoe.getHeight() <= getHeight()){
+			writeCurrentTetrinoToWorld();// TODO - move to a landing collision thing (for feature purposes)
+			fallingTetrominoe = current;
+		}else{
+			hasLost 		= true;
+		}
+		
+		checkMatches();
+		updateLevelUpData();
+	}
+	
+	private void writeCurrentTetrinoToWorld(){
+		for(int row = fallingTetrominoe.getRow(); row < fallingTetrominoe.getRow() + fallingTetrominoe.getHeight(); ++row){
+			for(int col = fallingTetrominoe.getCol(); col < fallingTetrominoe.getCol() + fallingTetrominoe.getWidth(); ++col){
+				if(fallingTetrominoe.getBlockRelativeToCoordinate(row, col) != EMPTY_BLOCK){
+					blocks[row][col] = fallingTetrominoe.getBlockRelativeToCoordinate(row, col);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public int getBlock(int row, int col){
+		int block = super.getBlock(row, col);
+		if(block == EMPTY_BLOCK){
+			return fallingTetrominoe.getBlockRelativeToCoordinate(row, col);
+		}else{
+			return block;
+		}
+	}
+	
+	private boolean isFallingTetrinoCollidingWithWorldBlock(){
+		for(int row = fallingTetrominoe.getRow(); row < fallingTetrominoe.getRow() + fallingTetrominoe.getHeight(); ++row){
+			for(int col = fallingTetrominoe.getCol(); col < fallingTetrominoe.getCol() + fallingTetrominoe.getWidth(); ++col){
+				if(fallingTetrominoe.getBlockRelativeToCoordinate(row, col) != EMPTY_BLOCK
+				&& super.getBlock(row, col) != EMPTY_BLOCK){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	private boolean isFallingTetrinoOutOfBounds(){
+		return (fallingTetrominoe.getCol() < 0 || fallingTetrominoe.getRow() < 0 
+			|| 	fallingTetrominoe.getCol() + fallingTetrominoe.getWidth() > getWidth()
+			|| 	fallingTetrominoe.getRow() + fallingTetrominoe.getHeight() > getHeight());
+	}
+	private void keepFallingTetrinoInBounds(){
+		if(fallingTetrominoe.getCol() < 0){
+			fallingTetrominoe.setCol(0);
+		}
+		else if(fallingTetrominoe.getCol() + fallingTetrominoe.getWidth() > getWidth()){
+			fallingTetrominoe.setCol(getWidth() - fallingTetrominoe.getWidth());
+		}
+		
+		if(fallingTetrominoe.getRow() < 0){
+			fallingTetrominoe.setRow(0);
+			newFallingTetrino();
+		}
+	}
+	
+	public int getWidth(){ return getCols(); }
+	public int getHeight(){ return getRows(); }
+
+	public void clearRow(int row){
+		blocks[row] = new int[getCols()];
+		++rowsCleared;
+	}
+	public void swapRows(int A, int B){
+		int[] temp 	= blocks[A].clone();
+		blocks[A] 	= blocks[B];
+		blocks[B] 	= temp;
+	}
+	
+	public boolean isRowFull(int row){
+		for(int col = 0; col < getCols(); ++col){
+			if(blocks[row][col] == EMPTY_BLOCK){
+				return false;
+			}
+		}
+		return true;
+	}
+	public boolean isRowEmpty(int row){
+		for(int col = 0; col < getCols(); ++col){
+			if(blocks[row][col] != EMPTY_BLOCK){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void shiftTetrinoLeft(){
+		fallingTetrominoe.shiftLeft();
+		keepFallingTetrinoInBounds();
+		
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrominoe.shiftRight();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void shiftTetrinoRight(){
+		fallingTetrominoe.shiftRight();
+		keepFallingTetrinoInBounds();
+		
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrominoe.shiftLeft();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void shiftTetrinoDown(){
+		fallingTetrominoe.shiftDown();
+		keepFallingTetrinoInBounds();
+
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrominoe.shiftUp();
+			keepFallingTetrinoInBounds();
+			
+			newFallingTetrino();
+		}
+	}
+	public void shiftTetrinoUp(){
+		fallingTetrominoe.shiftUp();
+		keepFallingTetrinoInBounds();
+
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrominoe.shiftDown();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void dropTetrinoDown(){
+		// handle if collision - reverse movement
+		while(! isFallingTetrinoCollidingWithWorldBlock()
+		   && fallingTetrominoe.getRow() >= 0){
+			fallingTetrominoe.shiftDown();
+		}
+		fallingTetrominoe.shiftUp();
+		newFallingTetrino();
+	}
+	
+	public void rotateTetrinoClockwise(){
+		if(!isFallingTetrinoOutOfBounds()){
+			fallingTetrominoe.rotateClockwise();
+			// handle if collision - reverse movement
+			if(isFallingTetrinoCollidingWithWorldBlock()){
+				fallingTetrominoe.rotateCounterclockwise();
+			}else if(isFallingTetrinoOutOfBounds()){
+				keepFallingTetrinoInBounds();
+			}
+		}
+	}
+	public void rotateTetrinoCounterclockwise(){
+		if(!isFallingTetrinoOutOfBounds()){
+			fallingTetrominoe.rotateCounterclockwise();
+			// handle if collision - reverse rotation
+			if(isFallingTetrinoCollidingWithWorldBlock()){
+				fallingTetrominoe.rotateClockwise();
+			}else if(isFallingTetrinoOutOfBounds()){
+				keepFallingTetrinoInBounds();
+			}
+		}
+	}
+	
+	public void swapTetrino(){
+		TetrominoeFactory.resetTetrominoePosition(fallingTetrominoe, getWidth(), getHeight());
+		if(!hasReservedTetrino()){
+			TetrominoeFactory.produceTetrominoe(getWidth(), getHeight());
+			reserveTetrominoe = fallingTetrominoe;
+			fallingTetrominoe = TetrominoeFactory.pop();
+		}else{
+			TetrominoeFactory.resetTetrominoePosition(reserveTetrominoe, getWidth(), getHeight());
+			Tetrominoe temp = reserveTetrominoe;
+			reserveTetrominoe = fallingTetrominoe;
+			fallingTetrominoe = temp;
+		}
+	}
+	
+	public Tetrominoe getReservedTetrino(){
+		return reserveTetrominoe;
+	}
+	public boolean hasReservedTetrino(){
+		return reserveTetrominoe != null;
+	}
+}

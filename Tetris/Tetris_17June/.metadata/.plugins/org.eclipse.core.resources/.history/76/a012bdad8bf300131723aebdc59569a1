@@ -1,0 +1,259 @@
+package com.retroactivegames.game;
+
+public class TetrisWorld extends BlockGrid{
+
+	private Tetrino fallingTetrino;
+	private int rowsCleared;
+	
+	final private long INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN 			= 1000;
+	final private long LEVEL_UP_WAIT_TIME_DECREMENTER 								= 100;
+	final private int  NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED = 10;
+	
+	private int nextLevelUpGoal = NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED;
+	
+	private long timeToWaitUntilNextGravityShiftDown;
+	private long lastTimeToWait;
+	
+	private int  difficultyLevel;
+	
+	private boolean hasLost;
+	
+	public TetrisWorld(int WIDTH, int HEIGHT) {
+		super(WIDTH, HEIGHT);
+		reset();
+	}
+	
+	public void reset(){
+		clear();
+
+		TetrinoFactory.produceTetrino(getWidth(), getHeight());
+		
+		fallingTetrino 	= TetrinoFactory.dequeue();
+		rowsCleared 	= 0;
+		lastTimeToWait 	= System.currentTimeMillis();
+		
+		timeToWaitUntilNextGravityShiftDown = INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN;
+		difficultyLevel = 1;
+		hasLost = false;
+	}
+	
+	public int getNumberOfClearedRows(){ return rowsCleared; }
+	public int getDifficulty(){ return difficultyLevel; }
+	
+	private void checkMatches(){
+		// DEPENDENCY ON ROW CHECK ORDER GOING OPPOSITE OF ALL INTERAL LOOP CHECKS.
+		for(int i = getRows()-1; i >=0; --i){
+			if(isRowFull(i)){
+				clearRow(i);
+				moveFloatingRowsDown();
+			}
+		}
+	}
+	
+	private void moveFloatingRowsDown(){
+		for(int q = 0; q < getRows()-1; ++q){
+			if(isRowEmpty(q)){ 
+				swapRows(q, findFirstNonEmptyRow(q));
+			}
+		}
+	}
+	
+	private int findFirstNonEmptyRow(int fromRow){
+		for(int row = fromRow; row < getRows()-1; ++row){
+			if(!isRowEmpty(row)){ return row; }
+		}
+		return fromRow;
+	}
+	
+	private void updateTimer(){
+		if(System.currentTimeMillis() > lastTimeToWait + timeToWaitUntilNextGravityShiftDown){
+			shiftTetrinoDown();
+			lastTimeToWait = System.currentTimeMillis();
+		}
+	}
+	
+	private void updateLevelUpData(){
+		if(rowsCleared >= nextLevelUpGoal){
+			++difficultyLevel;
+			nextLevelUpGoal = rowsCleared + NUMBER_OF_ROWS_NEEDED_TO_MATCH_UNTIL_DIFFICULTY_IS_INCREASED;
+			timeToWaitUntilNextGravityShiftDown = INITIAL_TIME_TO_WAIT_UNTIL_NEXT_GRAVITY_SHIFT_DOWN - (difficultyLevel-1)*LEVEL_UP_WAIT_TIME_DECREMENTER;
+		}
+	}
+	
+	public void update(){
+		if(!hasLost){ updateTimer(); }
+	}
+	
+	public boolean hasLost(){ return hasLost; }
+	
+	public void newFallingTetrino(){
+		setCurrentFallingTetrino(TetrinoFactory.produceTetrino(getWidth(), getHeight()));
+	}
+	
+	private void setCurrentFallingTetrino(Tetrino current){		
+		if(fallingTetrino.getRow() + fallingTetrino.getHeight() <= getHeight()){
+			writeCurrentTetrinoToWorld();// TODO - move to a landing collision thing (for feature purposes)
+			fallingTetrino = current;
+		}else{
+			hasLost 		= true;
+		}
+		
+		checkMatches();
+		updateLevelUpData();
+	}
+	
+	private void writeCurrentTetrinoToWorld(){
+		for(int row = fallingTetrino.getRow(); row < fallingTetrino.getRow() + fallingTetrino.getHeight(); ++row){
+			for(int col = fallingTetrino.getCol(); col < fallingTetrino.getCol() + fallingTetrino.getWidth(); ++col){
+				if(fallingTetrino.getBlockRelativeToCoordinate(row, col) != EMPTY_BLOCK){
+					blocks[row][col] = fallingTetrino.getBlockRelativeToCoordinate(row, col);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public int getBlock(int row, int col){
+		int block = super.getBlock(row, col);
+		if(block == EMPTY_BLOCK){
+			return fallingTetrino.getBlockRelativeToCoordinate(row, col);
+		}else{
+			return block;
+		}
+	}
+	
+	private boolean isFallingTetrinoCollidingWithWorldBlock(){
+		for(int row = fallingTetrino.getRow(); row < fallingTetrino.getRow() + fallingTetrino.getHeight(); ++row){
+			for(int col = fallingTetrino.getCol(); col < fallingTetrino.getCol() + fallingTetrino.getWidth(); ++col){
+				if(fallingTetrino.getBlockRelativeToCoordinate(row, col) != EMPTY_BLOCK
+				&& super.getBlock(row, col) != EMPTY_BLOCK){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	private boolean isFallingTetrinoOutOfBounds(){
+		return (fallingTetrino.getCol() < 0 || fallingTetrino.getRow() < 0 
+			|| 	fallingTetrino.getCol() + fallingTetrino.getWidth() > getWidth()
+			|| 	fallingTetrino.getRow() + fallingTetrino.getHeight() > getHeight());
+	}
+	private void keepFallingTetrinoInBounds(){
+		if(fallingTetrino.getCol() < 0){
+			fallingTetrino.setCol(0);
+		}
+		else if(fallingTetrino.getCol() + fallingTetrino.getWidth() > getWidth()){
+			fallingTetrino.setCol(getWidth() - fallingTetrino.getWidth());
+		}
+		
+		if(fallingTetrino.getRow() < 0){
+			fallingTetrino.setRow(0);
+			newFallingTetrino();
+		}
+	}
+	
+	public int getWidth(){ return getCols(); }
+	public int getHeight(){ return getRows(); }
+
+	public void clearRow(int row){
+		blocks[row] = new int[getCols()];
+		++rowsCleared;
+	}
+	public void swapRows(int A, int B){
+		int[] temp 	= blocks[A].clone();
+		blocks[A] 	= blocks[B];
+		blocks[B] 	= temp;
+	}
+	
+	public boolean isRowFull(int row){
+		for(int col = 0; col < getCols(); ++col){
+			if(blocks[row][col] == EMPTY_BLOCK){
+				return false;
+			}
+		}
+		return true;
+	}
+	public boolean isRowEmpty(int row){
+		for(int col = 0; col < getCols(); ++col){
+			if(blocks[row][col] != EMPTY_BLOCK){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void shiftTetrinoLeft(){
+		fallingTetrino.shiftLeft();
+		keepFallingTetrinoInBounds();
+		
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrino.shiftRight();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void shiftTetrinoRight(){
+		fallingTetrino.shiftRight();
+		keepFallingTetrinoInBounds();
+		
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrino.shiftLeft();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void shiftTetrinoDown(){
+		fallingTetrino.shiftDown();
+		keepFallingTetrinoInBounds();
+
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrino.shiftUp();
+			keepFallingTetrinoInBounds();
+			
+			newFallingTetrino();
+		}
+	}
+	public void shiftTetrinoUp(){
+		fallingTetrino.shiftUp();
+		keepFallingTetrinoInBounds();
+
+		// handle if collision - reverse movement
+		if(isFallingTetrinoCollidingWithWorldBlock()){
+			fallingTetrino.shiftDown();
+			keepFallingTetrinoInBounds();
+		}
+	}
+	public void dropTetrinoDown(){
+		// handle if collision - reverse movement
+		while(! isFallingTetrinoCollidingWithWorldBlock()
+		   && fallingTetrino.getRow() >= 0){
+			fallingTetrino.shiftDown();
+		}
+		fallingTetrino.shiftUp();
+		newFallingTetrino();
+	}
+	
+	public void rotateTetrinoClockwise(){
+		if(!isFallingTetrinoOutOfBounds()){
+			fallingTetrino.rotateClockwise();
+			// handle if collision - reverse movement
+			if(isFallingTetrinoCollidingWithWorldBlock()){
+				fallingTetrino.rotateCounterclockwise();
+			}else if(isFallingTetrinoOutOfBounds()){
+				keepFallingTetrinoInBounds();
+			}
+		}
+	}
+	public void rotateTetrinoCounterclockwise(){
+		if(!isFallingTetrinoOutOfBounds()){
+			fallingTetrino.rotateCounterclockwise();
+			// handle if collision - reverse rotation
+			if(isFallingTetrinoCollidingWithWorldBlock()){
+				fallingTetrino.rotateClockwise();
+			}else if(isFallingTetrinoOutOfBounds()){
+				keepFallingTetrinoInBounds();
+			}
+		}
+	}
+}

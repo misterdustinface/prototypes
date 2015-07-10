@@ -1,0 +1,131 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+
+import devan.input.VirtualInput;
+import devan.input.button.VirtualButtonPressedListener;
+import devan.input.button.VirtualButtonReleasedListener;
+import devan.input.gdx.InputDriver;
+
+/**
+ * @author dustin
+ */
+public class TetrominoeController {
+
+	protected InputDriver  inputDriver;
+	protected VirtualInput vInput;
+	private TetrisWorld  world;
+	private GameStateController gameStateController;
+	
+	public TetrominoeController(TetrisWorld WORLD){
+		world = WORLD;
+		setControls();
+	}
+	
+	protected void setControls(){
+		inputDriver = new InputDriver();
+		vInput 		= new VirtualInput();
+		
+		vInput.initDriver(inputDriver);
+
+		vInput.mapVKey("rotate counterclockwise", Keys.LEFT);
+		vInput.mapVKey("rotate clockwise", Keys.RIGHT);
+		//vInput.mapVKey("shift up", Keys.W);
+		vInput.mapVKey("shift down", Keys.S);
+		vInput.mapVKey("shift left", Keys.A);
+		vInput.mapVKey("shift right", Keys.D);		
+		vInput.mapVKey("drop", Keys.DOWN);
+		vInput.mapVKey("drop", Keys.SPACE);
+		
+		vInput.mapVKey("swap", Keys.W);
+		vInput.mapVKey("swap", Keys.UP);
+		
+		vInput.mapVKey("reset world", Keys.F1);
+		
+		//vInput.mapVKey("new", Keys.SPACE);
+
+//		vInput.addKeyPressed("new", new VirtualButtonPressedListener(){
+//			@Override
+//			public void keyPressed() {
+//				world.setCurrentFallingTetrino(new Tetrino(world.getWidth(), world.getHeight()));
+//			}
+//		});
+		
+		vInput.addKeyPressed("rotate counterclockwise", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.rotateTetrominoeCounterclockwise();
+				}
+			}
+		});
+		vInput.addKeyPressed("rotate clockwise", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.rotateTetrominoeClockwise();
+				}
+			}
+		});
+		
+		vInput.addKeyPressed("shift left", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.shiftTetrominoeLeft();
+				}
+			}
+		});
+		vInput.addKeyPressed("shift right", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.shiftTetrominoeRight();
+				}
+			}
+		});
+//		vInput.addKeyPressed("shift up", new VirtualButtonPressedListener(){
+//			@Override
+//			public void keyPressed() {
+//				world.shiftTetrinoUp();
+//			}
+//		});
+		vInput.addKeyPressed("shift down", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.shiftTetrominoeDown();
+				}
+			}
+		});
+		vInput.addKeyPressed("drop", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.dropTetrominoeDown();
+				}
+			}
+		});
+		
+		vInput.addKeyPressed("swap", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				if(!GameState.isPaused){
+					world.swapTetrominoe();
+				}
+			}
+		});
+		
+		vInput.addKeyPressed("reset world", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				world.reset();
+			}
+		});
+		
+		gameStateController = new GameStateController(vInput);
+		
+		Gdx.input.setInputProcessor(inputDriver.getInputProcessor());
+	}
+}

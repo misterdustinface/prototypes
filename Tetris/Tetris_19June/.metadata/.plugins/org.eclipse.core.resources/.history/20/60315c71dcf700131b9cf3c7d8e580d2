@@ -1,0 +1,17 @@
+package com.retroactivegames.game;
+
+import devan.input.VirtualInput;
+import devan.input.gdx.InputDriver;
+
+public class GameStateController {
+
+	protected InputDriver  inputDriver;
+	protected VirtualInput vInput;
+	private TetrisWorld  world;
+	
+	public TetrominoeController(TetrisWorld WORLD){
+		world = WORLD;
+		setPlayerControls();
+	}
+	
+}

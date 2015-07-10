@@ -1,0 +1,54 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.graphics.Color;
+
+import devan.drawing.GraphicsData;
+import devan.rendering.Display;
+
+public class TetrisHUD {
+
+	private TetrisWorld 		world;
+	private BlockGridRenderer 	nextBlockRenderer;
+	
+	private Display temp;
+	private Display nextBlockDisplay;
+	private Display heldBlockDisplay;
+	
+	public static String RESET_GAME_MESSAGE = "PRESS F1 TO RESET";
+	
+	public TetrisHUD(TetrisWorld WORLD){
+		world = WORLD;
+		nextBlockRenderer = new BlockGridRenderer();
+		
+		nextBlockDisplay = new Display(10,10,10,10);
+		heldBlockDisplay = new Display(20,10,10,10);
+	}
+	
+	public void render(GraphicsData g){
+		
+		if(GameState.showFPS){			
+			g.drawText("FPS: " + com.badlogic.gdx.Gdx.graphics.getFramesPerSecond(), 0, g.display.getCenterY(), Color.WHITE);
+		}
+		
+		if(world.hasLost()){
+			g.drawCenteredText(RESET_GAME_MESSAGE, g.display.getCenterX(), g.display.getCenterY(), Color.WHITE);
+		}else{
+			temp 		= g.display;
+			g.display 	= nextBlockDisplay;
+			
+			nextBlockRenderer.renderGrid(g, TetrinoFactory.peek().currentGrid());	
+			
+			if(TetrinoFactory.hasReservedTetrino()){
+				g.display 	= heldBlockDisplay;
+				nextBlockRenderer.renderGrid(g, TetrinoFactory.getReservedTetrino().currentGrid());
+			}
+			
+			g.display = temp;
+		}
+		
+		g.drawText("LEVEL: " + (world.getDifficulty()), 0, 0, Color.WHITE);
+		g.drawText("SCORE: " + (world.getNumberOfClearedRows() * 100), 	g.display.getCenterX(), 0, Color.WHITE);
+	}
+	
+
+}

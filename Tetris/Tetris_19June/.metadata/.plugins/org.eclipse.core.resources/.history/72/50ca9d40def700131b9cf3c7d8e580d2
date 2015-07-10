@@ -1,0 +1,24 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.Input.Keys;
+
+import devan.input.VirtualInput;
+import devan.input.button.VirtualButtonPressedListener;
+
+final public class TetrisWorldStateController {
+	
+	private TetrisWorldStateController(){}
+	
+	private static TetrisWorld world;
+	
+	public static void setControls(VirtualInput vInput, TetrisWorld WORLD){
+		world = WORLD; 
+		vInput.mapVKey("reset world", Keys.F1);
+		vInput.addKeyPressed("reset world", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				world.reset();
+			}
+		});
+	}
+}

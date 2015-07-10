@@ -1,0 +1,52 @@
+package com.retroactivegames.game;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+
+public class MusicPlaylist {
+
+	private ArrayList<String> files; 
+	private int trackIndex;
+	private Music currentMusic;
+	
+	public MusicPlaylist(){
+		files = new ArrayList<String>();
+		currentMusic = Gdx.audio.newMusic(Gdx.files.internal("data/Pignon_Rouge.mp3"));
+	}
+	
+	public void addTrack(String file){ files.add(file); }
+	public int getNumberOfTracks(){ return files.size(); }
+	
+	public void playTrack(String file){
+		addTrack(file);
+		currentMusic = loadTrack(file);
+		currentMusic.setLooping(false);
+		play();
+	}
+	
+	public void play(){  currentMusic.play(); }
+	public void loop(){  currentMusic.setLooping(true); }
+	public void pause(){ currentMusic.pause(); }
+	public void stop(){ currentMusic.stop(); }
+	
+	public void nextTrack(){
+		stop();
+		if(++trackIndex >= files.size()){ trackIndex = 0; }
+		playTrack(files.get(trackIndex));
+	}
+	
+	public void shuffleTracks(){
+		Random rand = new Random();
+		int tempIndex;
+		String tempFile;
+		for(int i = 0; i < files.size(); ++i){
+			tempIndex = rand.nextInt(files.size());
+			files.get(index)
+		}
+	}
+	
+	private Music loadTrack(String file){ return Gdx.audio.newMusic(Gdx.files.internal(file)); }
+}

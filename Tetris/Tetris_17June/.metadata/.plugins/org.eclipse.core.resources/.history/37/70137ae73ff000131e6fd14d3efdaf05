@@ -1,0 +1,6 @@
+package com.retroactivegames.game;
+
+public class GameData {
+
+	public boolean paused = false;
+}

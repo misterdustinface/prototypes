@@ -1,0 +1,5 @@
+package devan.sound;
+
+public interface MusicManipulator {
+	public Music manipulate(Music music);
+}

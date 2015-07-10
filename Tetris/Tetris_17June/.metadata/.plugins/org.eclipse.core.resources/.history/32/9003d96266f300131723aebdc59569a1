@@ -1,0 +1,38 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.graphics.Color;
+
+import devan.drawing.GeometryDrawer;
+import devan.drawing.GraphicsData;
+
+public class BlockGridRenderer {
+
+	public static Color[] colors = new Color[]{Color.DARK_GRAY, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED, Color.PINK, Color.MAGENTA};
+	public static int blockOffset = 2;
+	
+	public static void renderGrid(GraphicsData g, BlockGrid grid){
+		int blockWidth  = g.display.width/grid.getCols()  - blockOffset;
+		int blockHeight = g.display.height/grid.getRows() - blockOffset;
+		
+		for(int row = 0; row < grid.getRows(); ++row){
+			for(int col = 0; col < grid.getCols(); ++col){
+				GeometryDrawer.drawFilledRectangle(g, 	(int)(col*blockWidth + (col+0.5f)*blockOffset), 
+														(int)(row*blockHeight + (row+0.5f)*blockOffset), 
+														blockWidth, blockHeight, colors[grid.getBlock(row, col)]);
+			}
+		}
+	}
+	
+	public static void renderGrid(GraphicsData g, BlockGrid grid, Color c){
+		int blockWidth  = g.display.width/grid.getCols()  - blockOffset;
+		int blockHeight = g.display.height/grid.getRows() - blockOffset;
+		
+		for(int row = 0; row < grid.getRows(); ++row){
+			for(int col = 0; col < grid.getCols(); ++col){
+				GeometryDrawer.drawFilledRectangle(g, 	(int)(col*blockWidth + (col+0.5f)*blockOffset), 
+														(int)(row*blockHeight + (row+0.5f)*blockOffset), 
+														blockWidth, blockHeight, c);
+			}
+		}
+	}
+}

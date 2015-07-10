@@ -1,0 +1,10 @@
+package com.retroactivegames.game;
+
+public class GameData {
+
+	public static boolean paused = false;
+	
+	public static void togglePause(){
+		paused = !paused;
+	}
+}

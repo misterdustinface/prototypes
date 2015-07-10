@@ -1,0 +1,44 @@
+package devan.rendering;
+
+final public class Display {
+	
+	private int x, y, width, height;
+	
+	public Display(int WIDTH, int HEIGHT){
+		x = 0; y = 0;
+		width = WIDTH; height = HEIGHT;
+	}
+	public Display(int X, int Y, int WIDTH, int HEIGHT){
+		x = X; y = Y;
+		width = WIDTH; height = HEIGHT;
+	}
+	
+	final public void shift(int X_AMOUNT, int Y_AMOUNT){
+		x += X_AMOUNT; y += Y_AMOUNT;
+	}
+	final public void scale(double percent){
+		width = (int)(width * percent);
+		height = (int)(height * percent);
+	}
+	final public void resize(int WIDTH, int HEIGHT){
+		width = WIDTH; height = HEIGHT;
+	}
+	final public void setPosition(int X, int Y){
+		x = X; y = Y;
+	}
+	
+	final public int getX(){ return x; }
+	final public int getY(){ return y; }
+	final public int getWidth(){ return width; }
+	final public int getHeight(){ return height; }
+	
+	final public int getCenterX(){ return (width >> 1); }
+	final public int getCenterY(){ return (height >> 1); }
+	
+	public Display section(int X, int Y, int WIDTH, int HEIGHT){
+		return new Display(x + X, y + Y, WIDTH, HEIGHT);
+	}
+	public Display section(float xOffPercent, float yOffPercent, float widthPercent, float heightPercent){
+		return new Display((int)(x + width*xOffPercent), (int)(y + height*yOffPercent), (int)(width*widthPercent), (int)(height*heightPercent));
+	}
+}

@@ -1,0 +1,50 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.graphics.Color;
+
+import devan.drawing.GraphicsData;
+import devan.rendering.Display;
+
+public class TetrisHUD {
+
+	private TetrisWorld 		world;
+	private BlockGridRenderer 	nextBlockRenderer;
+	
+	private String nextBlockDisplay;
+	private String heldBlockDisplay;
+	
+	public static String RESET_GAME_MESSAGE = "PRESS F1 TO RESET";
+	
+	public TetrisHUD(TetrisWorld WORLD, String NEXT_BLOCK_DISPLAY, String HELD_BLOCK_DISPLAY){
+		world = WORLD;
+		nextBlockRenderer = new BlockGridRenderer();
+		
+		nextBlockDisplay = NEXT_BLOCK_DISPLAY;
+		heldBlockDisplay = HELD_BLOCK_DISPLAY;
+	}
+	
+	public void render(GraphicsData g){
+		
+		if(GameState.showFPS){			
+			g.drawText("FPS: " + com.badlogic.gdx.Gdx.graphics.getFramesPerSecond(), 0, g.getDisplay().getCenterY(), Color.WHITE);
+		}
+		
+		if(world.hasLost()){
+			g.drawCenteredText(RESET_GAME_MESSAGE, g.getDisplay().getCenterX(), g.getDisplay().getCenterY(), Color.WHITE);
+		}else{
+			g.setTargetDisplay(nextBlockDisplay);
+			nextBlockRenderer.renderGrid(g, TetrominoeFactory.peek().currentGrid());	
+			
+			if(world.hasReservedTetrino()){
+				g.setTargetDisplay(heldBlockDisplay);
+				nextBlockRenderer.renderGrid(g, world.getReservedTetrominoe().currentGrid());
+			}
+			g.resetTargetDisplayToMainDisplay();
+		}
+		
+		g.drawText("LEVEL: " + (world.getDifficulty()), 0, 0, Color.WHITE);
+		g.drawText("SCORE: " + (world.getNumberOfClearedRows() * 100), 	g.getDisplay().getCenterX(), 0, Color.WHITE);
+	}
+	
+
+}

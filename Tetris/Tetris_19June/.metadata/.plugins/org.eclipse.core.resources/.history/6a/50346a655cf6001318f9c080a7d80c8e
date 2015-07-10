@@ -1,0 +1,18 @@
+package devan.sound;
+
+import com.badlogic.gdx.audio.Music;
+
+public class FadeOut implements MusicManipulator{
+
+	private Music toFade;
+	
+	public FadeOut(){
+		
+	}
+	
+	@Override
+	public void manipulate(Music music) {
+		toFade = music;
+	}
+
+}

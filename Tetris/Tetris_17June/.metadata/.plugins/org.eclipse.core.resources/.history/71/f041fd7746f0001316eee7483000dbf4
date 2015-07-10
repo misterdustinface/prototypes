@@ -1,0 +1,127 @@
+package com.retroactivegames.game;
+
+import java.util.Random;
+
+public class Tetrino {
+	
+	private static Random rand = new Random();
+	private static BlockGrid[][] PRESETS = new BlockGrid[][]{
+		new BlockGrid[]{new BlockGrid(new int[][]{	{2,2},
+													{2,2}  	})
+		},
+		new BlockGrid[]{new BlockGrid(new int[][]{	{1,1,1},
+													{1} 	}),
+						new BlockGrid(new int[][]{	{1,1},
+													{0,1},
+													{0,1}  	}),
+						new BlockGrid(new int[][]{	{0,0,1},
+													{1,1,1} }),
+						new BlockGrid(new int[][]{	{1},
+													{1},
+													{1,1}  	})
+		},
+		new BlockGrid[]{new BlockGrid(new int[][]{	{3,0,0},
+													{3,3,3} }),
+						new BlockGrid(new int[][]{	{3,3},
+													{3},
+													{3}  	}),
+						new BlockGrid(new int[][]{	{3,3,3},
+													{0,0,3} }),
+						new BlockGrid(new int[][]{	{0,3},
+													{0,3},
+													{3,3}  	})
+		},
+		new BlockGrid[]{new BlockGrid(new int[][]{	{4},
+													{4},
+													{4},
+													{4} 	  }),
+						new BlockGrid(new int[][]{	{4,4,4,4} })
+		},
+		new BlockGrid[]{new BlockGrid(new int[][]{	{0,5},
+													{5,5,5},
+													{0,0,0}	}),
+						new BlockGrid(new int[][]{	{5},
+													{5,5},
+													{5}		}),
+						new BlockGrid(new int[][]{	{5,5,5},
+													{0,5},
+													{0}		}),
+						new BlockGrid(new int[][]{	{0,5},
+													{5,5},
+													{0,5}	})
+		},
+		new BlockGrid[]{new BlockGrid(new int[][]{	{6,6,6,6,6},
+													{6,6,6,6,6},
+													{6,6,6,6,6},
+													{6,6,6,6,6},
+													{6,6,6,6,6}})
+		}
+	};
+	private static BlockGrid[] getRandomPreset(){
+		return PRESETS[rand.nextInt(PRESETS.length)];
+	}
+	
+	private BoardCoordinate coordinate;
+	private BlockGrid[] 	tetrinoDef;
+	private int 			currentTetrino;
+	
+	public Tetrino(BlockGrid[] TETRINO_DEFINITION, BoardCoordinate COORDIANTE){
+		tetrinoDef = TETRINO_DEFINITION;
+		coordinate = COORDIANTE;
+		currentTetrino = 0;
+	}
+	
+	public Tetrino(int worldWidth, int worldHeight){
+		tetrinoDef 		= getRandomPreset();
+		coordinate 		= new BoardCoordinate(worldHeight, (worldWidth>>1) - 1);
+		currentTetrino 	= 0;
+	}
+	
+	public int getBlockRelativeToCoordinate(int row, int col){
+		row -= coordinate.row;
+		col -= coordinate.col;
+		return currentTetrino().getBlock(row, col);
+	}
+	
+	public boolean intersectsWorldBlocks(BlockGrid world){
+		
+		for(int row = 0; row < currentTetrino().getRows(); ++row){
+			for(int col = 0; col < currentTetrino().getCols(); ++col){
+				if(currentTetrino().isBlockFilled(row, col) && world.isBlockFilled(row + coordinate.row, col + coordinate.col)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private BlockGrid currentTetrino(){
+		return tetrinoDef[currentTetrino];
+	}
+	
+	public int getWidth(){ return currentTetrino().getCols(); }
+	public int getHeight(){ return currentTetrino().getRows(); }
+	
+	public int getRow(){return coordinate.row;}
+	public int getCol(){return coordinate.col;}
+	public void setRow(int row){ coordinate.row = row; }
+	public void setCol(int col){ coordinate.col = col; }
+	
+	public void shiftLeft(){--coordinate.col;}
+	public void shiftRight(){++coordinate.col;}
+	public void shiftUp(){++coordinate.row;}
+	public void shiftDown(){--coordinate.row;}
+	
+	public void rotateClockwise(){
+		++currentTetrino;
+		if(currentTetrino > tetrinoDef.length-1){
+			currentTetrino = 0;
+		}
+	}
+	public void rotateCounterclockwise(){
+		--currentTetrino;
+		if(currentTetrino < 0){
+			currentTetrino = tetrinoDef.length-1;
+		}
+	}
+}

@@ -1,0 +1,32 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+
+public class MusicPlaylist {
+
+	private Music currentMusic;
+	
+	
+	public MusicPlaylist(){
+		currentMusic = Gdx.audio.newMusic(Gdx.files.internal("data/Pignon_Rouge.mp3"));
+	}
+	
+	public void playTrack(String file){
+		currentMusic = Gdx.audio.newMusic(Gdx.files.internal(file));
+		currentMusic.setLooping(false);
+	}
+	
+	public void play(){
+		
+		currentMusic.play();
+	}
+	
+	public void loop(){
+		currentMusic.setLooping(true);
+	}
+	
+	public void pause(){
+		
+	}
+}

@@ -1,0 +1,5 @@
+package devan.utilities;
+
+public final class Shuffler {
+	private Shuffler();
+}

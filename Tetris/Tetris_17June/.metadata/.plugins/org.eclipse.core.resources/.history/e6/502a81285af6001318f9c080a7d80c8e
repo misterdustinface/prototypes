@@ -1,0 +1,7 @@
+package devan.sound;
+
+public abstract class MusicManipulator {
+
+	
+	
+}

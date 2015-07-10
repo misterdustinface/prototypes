@@ -1,0 +1,45 @@
+package com.retroactivegames.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+
+import devan.input.VirtualInput;
+import devan.input.button.VirtualButtonPressedListener;
+import devan.input.gdx.InputDriver;
+
+public class RendererController {
+	private InputDriver  		inputDriver;
+	private VirtualInput 		vInput;
+	private TetrisWorldRenderer renderer;
+	
+	public RendererController(TetrisWorldRenderer RENDERER){
+		renderer = RENDERER;
+		setPlayerControls();
+	}
+	
+	private void setPlayerControls(){
+		inputDriver = new InputDriver();
+		vInput 		= new VirtualInput();
+		vInput.initDriver(inputDriver);
+
+		vInput.mapVKey("increase tile spacing", Keys.NUM_2);
+		vInput.mapVKey("decrease tile spacing", Keys.NUM_1);
+
+		vInput.addKeyPressed("decrease tile spacing", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				
+			}
+		});
+		
+		vInput.addKeyPressed("increase tile spacing", new VirtualButtonPressedListener(){
+			@Override
+			public void keyPressed() {
+				
+			}
+		});
+		
+		
+		Gdx.input.setInputProcessor(inputDriver.getInputProcessor());
+	}
+}

@@ -1,0 +1,71 @@
+package com.retroactivegames.game;
+
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.Disposable;
+
+import devan.utilities.Shuffler;
+
+public class MusicPlaylist implements Disposable{
+
+	private ArrayList<String> files; 
+	private int trackIndex;
+	private Music  currentMusic;
+	private String currentFile;
+	
+	public MusicPlaylist(){
+		files = new ArrayList<String>();
+		currentFile = "data/Pignon_Rouge.mp3";
+		currentMusic = Gdx.audio.newMusic(Gdx.files.internal(currentFile));
+	}
+	
+	public void addTrack(String file){ files.add(file); }
+	public int getNumberOfTracks(){ return files.size(); }
+	
+	public void removeTrack(String file){
+		files.remove(file);
+		if(currentFile == file){ nextTrack(); }
+	}
+	
+	public void playTrack(String file){
+		addTrack(file);
+		currentFile  = file;
+		currentMusic = loadTrack(file);
+		currentMusic.setLooping(false);
+		play();
+	}
+	
+	public void play(){  currentMusic.play(); }
+	public void loop(){  currentMusic.setLooping(true); }
+	public void pause(){ currentMusic.pause(); }
+	public void stop(){  currentMusic.stop(); }
+	
+	public void nextTrack(){
+		stop();
+		if(++trackIndex >= files.size()){ trackIndex = 0; }
+		playTrack(files.get(trackIndex));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void shuffleTracks(){
+		try {
+			files = Shuffler.shuffleArrayList(files);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private Music loadTrack(String file){ 
+		currentFile = file;
+		return Gdx.audio.newMusic(Gdx.files.internal(file)); 
+	}
+
+	@Override
+	public void dispose() {
+		currentMusic.dispose();
+	}
+}

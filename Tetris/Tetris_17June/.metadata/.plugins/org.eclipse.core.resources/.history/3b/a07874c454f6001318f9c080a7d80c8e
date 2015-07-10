@@ -1,0 +1,14 @@
+package devan.utilities;
+
+import java.util.Collection;
+import java.util.Random;
+
+public final class Shuffler {
+	private Shuffler(){}
+	
+	private static Random rand = new Random();
+	
+	public static Collection shuffle(Collection<> collection, Class c){
+		
+	}
+}

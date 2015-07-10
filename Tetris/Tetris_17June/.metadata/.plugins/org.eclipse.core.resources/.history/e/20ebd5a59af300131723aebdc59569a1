@@ -1,0 +1,110 @@
+package com.retroactivegames.game;
+
+
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
+
+import devan.drawing.GraphicsData;
+import devan.init.OpenGL;
+import devan.rendering.Display;
+
+public class Game implements ApplicationListener {
+
+	final public static int WORLD_WIDTH  = 10;
+	final public static int WORLD_HEIGHT = 22;
+	
+	private TetrisWorld 		world;
+	
+	private TetrisWorldRenderer worldRenderer;
+	private GraphicsData 		worldRendererGraphicsData;
+	private Display				worldRendererScreen;
+	
+	private TetrisHUD			hudRenderer;
+	private GraphicsData 		hudGraphicsData;
+	private Display				hudScreen;
+	
+	final private static String nextBlockScreenKey = "NEXT";
+	final private static String	heldBlockScreenKey = "HELD";
+	
+	//private TetrinoController	controller;
+	private DebugController		debugController;
+	
+	final private int WORLD_RENDERER_DISPLAY_X_OFFSET = 32;
+	final private int WORLD_RENDERER_DISPLAY_Y_OFFSET = 48;
+	
+	final private int HUD_RENDERER_DISPLAY_Y_OFFSET_FROM_WORLD_RENDERER = -4;
+	
+	private Music music;
+	
+	@Override
+	public void create() {		
+		
+		world 			= new TetrisWorld(WORLD_WIDTH, WORLD_HEIGHT);
+		worldRenderer 	= new TetrisWorldRenderer(world);
+		hudRenderer 	= new TetrisHUD(world, nextBlockScreenKey, heldBlockScreenKey);
+		
+		OpenGL.initialize(Gdx.gl);
+		worldRendererScreen 		= new Display(	WORLD_RENDERER_DISPLAY_X_OFFSET, 
+													WORLD_RENDERER_DISPLAY_Y_OFFSET, 
+													Gdx.graphics.getWidth() - WORLD_RENDERER_DISPLAY_X_OFFSET*2, 
+													Gdx.graphics.getHeight() - WORLD_RENDERER_DISPLAY_Y_OFFSET*2);
+		worldRendererGraphicsData 	= new GraphicsData(worldRendererScreen);
+		
+		hudScreen 					= new Display(	WORLD_RENDERER_DISPLAY_X_OFFSET, 
+													Gdx.graphics.getHeight() - WORLD_RENDERER_DISPLAY_Y_OFFSET - HUD_RENDERER_DISPLAY_Y_OFFSET_FROM_WORLD_RENDERER, 
+													Gdx.graphics.getWidth() - WORLD_RENDERER_DISPLAY_X_OFFSET*2, 
+													WORLD_RENDERER_DISPLAY_Y_OFFSET - HUD_RENDERER_DISPLAY_Y_OFFSET_FROM_WORLD_RENDERER*2);
+		hudGraphicsData = new GraphicsData(hudScreen);
+		
+		hudGraphicsData.addDisplay(nextBlockScreenKey, hudScreen.section(0,0,0.25f,0.25f));
+		hudGraphicsData.addDisplay(heldBlockScreenKey, hudScreen.section(0.25f,0,0.25f,0.25f));
+		
+//		hudGraphicsData.addDisplay(nextBlockScreenKey, hudScreen.section(0f, 0f, .1f, .1f));
+//		hudGraphicsData.addDisplay(heldBlockScreenKey, hudScreen.section(0f, .1f, .1f, .1f));
+		
+		//controller 		= new TetrinoController(world);
+		debugController = new DebugController(world, worldRenderer);
+		
+		music = Gdx.audio.newMusic(Gdx.files.internal("data/Pignon_Rouge.mp3"));
+		music.play();
+		music.setLooping(true);
+	}
+
+	@Override
+	public void dispose() {
+		worldRendererGraphicsData.dispose();
+		hudGraphicsData.dispose();
+	}
+
+	
+	@Override
+	public void render() {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		if(! GameState.isPaused){
+			world.update();
+		}
+		
+		worldRenderer.render(worldRendererGraphicsData);
+		hudRenderer.render(hudGraphicsData);
+		
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		//screen.resize(width, height);
+	}
+
+	@Override
+	public void pause() {
+		GameState.isPaused = true;
+	}
+
+	@Override
+	public void resume() {
+		GameState.isPaused = false;
+	}
+
+}

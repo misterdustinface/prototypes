@@ -1,0 +1,12 @@
+package com.retroactivegames.game;
+
+public class TetrominoeController {
+
+	Tetrominoe tetrominoe;
+	
+	public TetrominoeController(Tetrominoe TETROMINOE){
+		world = TETROMINOE;
+		setControls();
+	}
+	
+}

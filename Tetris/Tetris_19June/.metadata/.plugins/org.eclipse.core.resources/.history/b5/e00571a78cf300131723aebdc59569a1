@@ -1,0 +1,63 @@
+package com.retroactivegames.game;
+
+
+public class Tetrino {
+	
+	private BoardCoordinate coordinate;
+	private BlockGrid[] 	tetrinoDef;
+	private int 			currentTetrino;
+	
+	public Tetrino(BlockGrid[] TETRINO_DEFINITION, BoardCoordinate COORDIANTE){
+		tetrinoDef = TETRINO_DEFINITION;
+		coordinate = COORDIANTE;
+		currentTetrino = 0;
+	}
+	
+	public int getBlockRelativeToCoordinate(int row, int col){
+		row -= coordinate.row;
+		col -= coordinate.col;
+		return currentTetrino().getBlock(row, col);
+	}
+	
+//	public boolean intersectsWorldBlocks(BlockGrid world){
+//		
+//		for(int row = 0; row < currentTetrino().getRows(); ++row){
+//			for(int col = 0; col < currentTetrino().getCols(); ++col){
+//				if(currentTetrino().isBlockFilled(row, col) && world.isBlockFilled(row + coordinate.row, col + coordinate.col)){
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
+	
+	private BlockGrid currentTetrino(){
+		return tetrinoDef[currentTetrino];
+	}
+	
+	public int getWidth(){ return currentTetrino().getCols(); }
+	public int getHeight(){ return currentTetrino().getRows(); }
+	
+	public int getRow(){return coordinate.row;}
+	public int getCol(){return coordinate.col;}
+	public void setRow(int row){ coordinate.row = row; }
+	public void setCol(int col){ coordinate.col = col; }
+	
+	public void shiftLeft(){--coordinate.col;}
+	public void shiftRight(){++coordinate.col;}
+	public void shiftUp(){++coordinate.row;}
+	public void shiftDown(){--coordinate.row;}
+	
+	public void rotateClockwise(){
+		++currentTetrino;
+		if(currentTetrino > tetrinoDef.length-1){
+			currentTetrino = 0;
+		}
+	}
+	public void rotateCounterclockwise(){
+		--currentTetrino;
+		if(currentTetrino < 0){
+			currentTetrino = tetrinoDef.length-1;
+		}
+	}
+}

@@ -1,0 +1,9 @@
+package com.retroactivegames.game;
+
+public class GameState {
+	public static boolean isPaused = false;
+	public static void togglePause(){ isPaused = !isPaused; }
+	
+	public static boolean debug = false;
+	public static void toggleDebug(){ debug = !debug; }
+}
