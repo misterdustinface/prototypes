@@ -8,6 +8,7 @@ function love.load(arg)
   --love.window.setFullscreen(false)  
   
   level = Level('_levels/test1')
+  print("[D] moves left, [F] moves right")
 end
   
 function love.update(dt)
